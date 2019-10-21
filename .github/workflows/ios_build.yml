@@ -1,0 +1,36 @@
+name: CI
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install and run xcodegen
+      run: |
+        brew install xcodegen
+        xcodegen generate
+    - name: Run fastlane setup
+      env:
+        APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: |
+        fastlane setup --verbose
+    - name: Run fastlane build
+      env:
+        MATCH_REPO: ${{ secrets.MATCH_REPO }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASS }}
+        SIGNING_ID: ${{ secrets.SIGNING_ID }}
+        APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: |
+        fastlane compile --verbose
+    - name: Run fastlane deploy
+      env:
+        HOCKEY_TOKEN: ${{ secrets.HOCKEY_TOKEN}}
+        APPLE_ACCOUNT: ${{ secrets.APPLE_ACCOUNT }}
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: fastlane deploy --verbose

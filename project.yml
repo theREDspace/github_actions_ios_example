@@ -1,0 +1,15 @@
+name: actionstest
+
+options:
+  bundleIdPrefix: com.redspace
+  settings:
+      DEBUG_INFORMATION_FORMAT: DWARF
+targets:
+  actionstest:
+    type: application
+    platform: iOS
+    deploymentTarget: "10.0"
+    sources: [actionstest]
+    attributes: []
+    settings:
+      DEBUG_INFORMATION_FORMAT: DWARF

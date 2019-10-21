@@ -1,0 +1,3 @@
+app_identifier "com.redspace.actionstest"
+apple_id ENV["APPLE_ACCOUNT"] # Your Apple email address
+team_id ENV["TEAM_ID"] # Developer Portal Team ID

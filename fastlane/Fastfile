@@ -1,0 +1,74 @@
+fastlane_version "2.98.0"
+default_platform :ios
+
+platform :ios do
+  before_all do |lane, options|
+	ENV["XCODE_PROJ"] = "./actionstest.xcodeproj"
+	ENV["APP_ID"] = "com.redspace.actionstest"
+	ENV["PLIST"] = "./actionstest/Info.plist"
+	ENV["APP_NAME"] = "actionstest"
+  end
+
+	lane :everything do
+		setup
+		compile
+		deploy
+	end
+
+  lane :setup do
+	setup_project
+  end
+
+  lane :compile do
+	build
+  end
+
+  lane :deploy do
+	hockey_upload
+  end
+
+  private_lane :setup_project do
+
+
+	create_keychain(
+		name: "actiontest_keychain",
+		password: "meow",
+		default_keychain: true,
+		unlock: true,
+		timeout: 3600,
+		lock_when_sleeps: false
+	)
+  end
+
+  private_lane :build do
+	match(
+		type: "appstore",
+		readonly: is_ci,
+	  	keychain_name: "actiontest_keychain",
+	  	keychain_password: "meow"
+  	)
+
+	update_project_provisioning(
+		xcodeproj: ENV["XCODE_PROJ"],
+		profile: ENV["sigh_com.redspace.actionstest_appstore_profile-path"],
+		target_filter: "actionstest", # matches name or type of a target
+		build_configuration: "Release",
+		code_signing_identity: ENV["SIGNING_ID"]
+	)
+
+	build_app(
+		scheme: "actionstest",
+		project: ENV["XCODE_PROJ"]
+	)
+
+  end
+
+  private_lane :hockey_upload do
+  	hockey(
+	  	api_token: ENV["HOCKEY_TOKEN"],
+	  	create_status: "2",
+	  	ipa: "actionstest.ipa",
+	  	notes: ENV["RELEASENOTES"]
+	)
+  end
+end
